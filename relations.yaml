@@ -1,0 +1,86 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: user-db
+  description: PostgreSQL database for user data.
+  tags:
+    - database
+    - postgresql
+spec:
+  type: database
+  lifecycle: production
+  owner: team-alpha
+  system: user-management-system
+  relations:
+    - type: providesApi
+      targetRef: api:default/user-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: user-service
+  description: A microservice responsible for managing user data.
+  tags:
+    - microservice
+    - user-management
+spec:
+  type: service
+  lifecycle: production
+  owner: team-alpha
+  system: user-management-system
+  relations:
+    - type: consumesApi
+      targetRef: api:default/user-api
+    - type: dependsOn
+      targetRef: resource:default/user-db
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: user-api
+  description: REST API for user management.
+  tags:
+    - rest
+    - user-management
+spec:
+  type: openapi
+  lifecycle: production
+  owner: team-alpha
+  system: user-management-system
+  relations:
+    - type: providedBy
+      targetRef: component:default/user-service
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: user-management-system
+  description: A system that handles user authentication, profile management, and related services.
+  tags:
+    - user-management
+    - identity
+spec:
+  owner: team-alpha
+  domain: identity-domain
+  relations:
+    - type: hasPart
+      targetRef: component:default/user-service
+    - type: hasPart
+      targetRef: api:default/user-api
+    - type: hasPart
+      targetRef: resource:default/user-db
+---
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: identity-domain
+  description: Domain responsible for identity and access management.
+  tags:
+    - identity
+    - access-management
+spec:
+  owner: team-alpha
+  relations:
+    - type: hasPart
+      targetRef: system:default/user-management-system
