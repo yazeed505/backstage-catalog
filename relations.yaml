@@ -1,22 +1,5 @@
 ---
 apiVersion: backstage.io/v1alpha1
-kind: Resource
-metadata:
-  name: user-db
-  description: PostgreSQL database for user data.
-  tags:
-    - database
-    - postgresql
-spec:
-  type: database
-  lifecycle: production
-  owner: team-alpha
-  system: user-management-system
-  relations:
-    - type: providesApi
-      targetRef: api:default/user-api
----
-apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: user-service
@@ -29,11 +12,6 @@ spec:
   lifecycle: production
   owner: team-alpha
   system: user-management-system
-  relations:
-    - type: consumesApi
-      targetRef: api:default/user-api
-    - type: dependsOn
-      targetRef: resource:default/user-db
 ---
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -48,9 +26,87 @@ spec:
   lifecycle: production
   owner: team-alpha
   system: user-management-system
-  relations:
-    - type: providedBy
-      targetRef: component:default/user-service
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: User API
+      version: 1.0.0
+      description: REST API for managing user data.
+      contact:
+        email: support@example.com
+      license:
+        name: Apache 2.0
+        url: http://www.apache.org/licenses/LICENSE-2.0.html
+    servers:
+      - url: https://api.example.com/v1
+        description: Production server
+    paths:
+      /users:
+        get:
+          summary: Get all users
+          description: Returns a list of all users.
+          operationId: getUsers
+          responses:
+            '200':
+              description: A list of users
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+      /users/{userId}:
+        get:
+          summary: Get a user by ID
+          description: Returns a single user by ID.
+          operationId: getUserById
+          parameters:
+            - name: userId
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            '200':
+              description: A user object
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/User'
+            '404':
+              description: User not found
+    components:
+      schemas:
+        User:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The unique identifier for the user.
+            name:
+              type: string
+              description: The name of the user.
+            email:
+              type: string
+              description: The email address of the user.
+          required:
+            - id
+            - name
+            - email
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: user-db
+  description: PostgreSQL database for user data.
+  tags:
+    - database
+    - postgresql
+spec:
+  type: database
+  lifecycle: production
+  owner: team-alpha
+  system: user-management-system
 ---
 apiVersion: backstage.io/v1alpha1
 kind: System
@@ -63,13 +119,6 @@ metadata:
 spec:
   owner: team-alpha
   domain: identity-domain
-  relations:
-    - type: hasPart
-      targetRef: component:default/user-service
-    - type: hasPart
-      targetRef: api:default/user-api
-    - type: hasPart
-      targetRef: resource:default/user-db
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Domain
@@ -81,6 +130,74 @@ metadata:
     - access-management
 spec:
   owner: team-alpha
-  relations:
-    - type: hasPart
-      targetRef: system:default/user-management-system
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: john-doe
+  description: Senior backend developer in Team Alpha.
+spec:
+  memberOf: [team-alpha]
+  profile:
+    email: john.doe@example.com
+    displayName: John Doe
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: team-alpha
+  description: Backend development team responsible for user management services.
+spec:
+  type: team
+  children: []
+  profile:
+    email: team-alpha@example.com
+    displayName: Team Alpha
+---
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: us-east-1
+  description: AWS US East (N. Virginia) region.
+  tags:
+    - aws
+    - cloud-region
+spec:
+  type: cloud-region
+  owner: team-infra
+---
+apiVersion: backstage.io/v1beta3
+kind: Template
+metadata:
+  name: nodejs-service-template
+  description: Template for creating a new Node.js microservice.
+  tags:
+    - nodejs
+    - microservice
+spec:
+  type: service
+  owner: team-alpha
+  parameters:
+    - title: Service Name
+      required: true
+      type: string
+      description: The name of the service.
+      name: serviceName
+    - title: Service Description
+      required: true
+      type: string
+      description: A brief description of the service.
+      name: serviceDescription
+    - title: Owner
+      required: true
+      type: string
+      description: The team or individual responsible for the service.
+      name: owner
+  steps:
+    - id: generate
+      name: Generate
+      action: create:nodejs
+      input:
+        name: ${{ parameters.serviceName }}
+        description: ${{ parameters.serviceDescription }}
+        owner: ${{ parameters.owner }}
