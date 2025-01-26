@@ -165,39 +165,39 @@ metadata:
 spec:
   type: cloud-region
   owner: team-infra
----
-apiVersion: backstage.io/v1beta3
-kind: Template
-metadata:
-  name: nodejs-service-template
-  description: Template for creating a new Node.js microservice.
-  tags:
-    - nodejs
-    - microservice
-spec:
-  type: service
-  owner: team-alpha
-  parameters:
-    - title: Service Name
-      required: true
-      type: string
-      description: The name of the service.
-      name: serviceName
-    - title: Service Description
-      required: true
-      type: string
-      description: A brief description of the service.
-      name: serviceDescription
-    - title: Owner
-      required: true
-      type: string
-      description: The team or individual responsible for the service.
-      name: owner
-  steps:
-    - id: generate
-      name: Generate
-      action: create:nodejs
-      input:
-        name: ${{ parameters.serviceName }}
-        description: ${{ parameters.serviceDescription }}
-        owner: ${{ parameters.owner }}
+# ---
+# apiVersion: backstage.io/v1beta3
+# kind: Template
+# metadata:
+#   name: nodejs-service-template
+#   description: Template for creating a new Node.js microservice.
+#   tags:
+#     - nodejs
+#     - microservice
+# spec:
+#   type: service
+#   owner: team-alpha
+#   parameters:
+#     - title: Service Name
+#       required: true
+#       type: string
+#       description: The name of the service.
+#       name: serviceName
+#     - title: Service Description
+#       required: true
+#       type: string
+#       description: A brief description of the service.
+#       name: serviceDescription
+#     - title: Owner
+#       required: true
+#       type: string
+#       description: The team or individual responsible for the service.
+#       name: owner
+#   steps:
+#     - id: generate
+#       name: Generate
+#       action: create:nodejs
+#       input:
+#         name: ${{ parameters.serviceName }}
+#         description: ${{ parameters.serviceDescription }}
+#         owner: ${{ parameters.owner }}
