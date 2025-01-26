@@ -1,3 +1,4 @@
+---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
@@ -37,3 +38,111 @@ spec:
           responses:
             '200':
               description: A list of users
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: user-db
+  description: PostgreSQL database for user data.
+  tags:
+    - database
+    - postgresql
+spec:
+  type: database
+  lifecycle: production
+  owner: team-alpha
+  system: user-management-system
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: user-management-system
+  description: A system that handles user authentication, profile management, and related services.
+  tags:
+    - user-management
+    - identity
+spec:
+  owner: team-alpha
+  domain: identity-domain
+---
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: identity-domain
+  description: Domain responsible for identity and access management.
+  tags:
+    - identity
+    - access-management
+spec:
+  owner: team-alpha
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: john-doe
+  description: Senior backend developer in Team Alpha.
+spec:
+  memberOf: [team-alpha]
+  profile:
+    email: john.doe@example.com
+    displayName: John Doe
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: team-alpha
+  description: Backend development team responsible for user management services.
+spec:
+  type: team
+  children: []
+  profile:
+    email: team-alpha@example.com
+    displayName: Team Alpha
+---
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: us-east-1
+  description: AWS US East (N. Virginia) region.
+  tags:
+    - aws
+    - cloud-region
+spec:
+  type: cloud-region
+  owner: team-infra
+---
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: nodejs-service-template
+  description: Template for creating a new Node.js microservice.
+  tags:
+    - nodejs
+    - microservice
+spec:
+  type: service
+  owner: team-alpha
+  parameters:
+    - title: Service Name
+      required: true
+      type: string
+      description: The name of the service.
+      name: serviceName
+    - title: Service Description
+      required: true
+      type: string
+      description: A brief description of the service.
+      name: serviceDescription
+    - title: Owner
+      required: true
+      type: string
+      description: The team or individual responsible for the service.
+      name: owner
+  steps:
+    - id: generate
+      name: Generate
+      action: create:nodejs
+      input:
+        name: ${{ parameters.serviceName }}
+        description: ${{ parameters.serviceDescription }}
+        owner: ${{ parameters.owner }}
