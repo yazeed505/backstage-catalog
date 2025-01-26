@@ -1,0 +1,39 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: user-service
+  description: A microservice responsible for managing user data.
+  tags:
+    - microservice
+    - user-management
+spec:
+  type: service
+  lifecycle: production
+  owner: team-alpha
+  system: user-management-system
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: user-api
+  description: REST API for user management.
+  tags:
+    - rest
+    - user-management
+spec:
+  type: rest
+  lifecycle: production
+  owner: team-alpha
+  system: user-management-system
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: User API
+      version: 1.0.0
+    paths:
+      /users:
+        get:
+          summary: Get all users
+          responses:
+            '200':
+              description: A list of users
