@@ -2,6 +2,9 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
+  annotations:
+    backstage.io/editable-fields: |
+      deployment.yaml: "spec.replicas, spec.template.spec.containers[].image"
   name: user-service
   description: A microservice responsible for managing user data.
   tags:
