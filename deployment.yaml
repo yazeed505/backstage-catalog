@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: example-deployment
 spec:
-  replicas: 3
+  replicas: '5'
   selector:
     matchLabels:
       app: example
@@ -13,7 +13,7 @@ spec:
         app: example
     spec:
       containers:
-      - name: example-container
-        image: example-image
-        ports:
-        - containerPort: 8080
+        - name: example-container
+          image: example-image
+          ports:
+            - containerPort: 8080
