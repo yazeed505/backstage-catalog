@@ -6,6 +6,9 @@ metadata:
       deployment.yaml:
         - spec.replicas
         - spec.template.spec.containers[].image
+      services.yaml:
+        - spec.ports[].port
+        - spec.ports[].targetPort
   name: user-service
   description: A microservice responsible for managing user data.
   tags:
